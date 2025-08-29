@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import { createServerClient } from "@supabase/ssr"
-import FolderList from "@/components/folder-list"
-import BookmarkForm from "@/components/bookmark-form"
-import BookmarkItem from "@/components/bookmark-item"
+import FolderList from "@/app/components/folder-list"
+import BookmarkForm from "@/app/components/bookmark-form"
+import BookmarkItem from "@/app/components/bookmark-item"
 import Input from "@/app/components/ui/input"
 
 export default async function Home({ searchParams }: { searchParams?: { q?: string } }) {
@@ -12,7 +12,7 @@ export default async function Home({ searchParams }: { searchParams?: { q?: stri
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        { cookies: { get: (name: string) => cookieStore.get(name)?.value } }
+        { cookies: { get: async (name: string) => (await cookieStore).get(name)?.value } }
     )
 
     const { data: { user } } = await supabase.auth.getUser()
@@ -30,7 +30,7 @@ export default async function Home({ searchParams }: { searchParams?: { q?: stri
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            { cookies: { get: (name: string) => cookieStore.get(name)?.value } }
+            { cookies: { get: async (name: string) => (await cookieStore).get(name)?.value } }
         )
         await supabase.from("bookmarks").delete().eq("id", id)
     }
@@ -71,7 +71,7 @@ async function CreateFolder() {
         const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            { cookies: { get: (name: string) => cookieStore.get(name)?.value } }
+            { cookies: { get: async (name: string) => (await cookieStore).get(name)?.value } }
         )
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
